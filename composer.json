@@ -1,0 +1,26 @@
+{
+    "name": "serggio/test_code_refactoring",
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "CurrencyApp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CurrencyApp\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Serggio",
+            "email": "serggio.dev@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.2"
+    }
+}

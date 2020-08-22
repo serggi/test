@@ -6,5 +6,5 @@ namespace CurrencyApp\Provider;
 
 interface RateProviderInterface
 {
-    public function getRates(): array;
+    public function getRateByCurrencyCode(string $currencyCode): ?float;
 }

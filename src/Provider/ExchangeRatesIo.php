@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace CurrencyApp\Provider;
 
+use CurrencyApp\Exception\BadResponseException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 
 class ExchangeRatesIo implements RateProviderInterface
 {
     private const PROVIDER_URL = 'https://api.exchangeratesapi.io';
-    private $client;
-    private $apiKey;
+    private Client $client;
+    private ?string $apiKey;
 
     public function __construct(?string $apiKey = null, Client $client = null)
     {
@@ -19,7 +19,7 @@ class ExchangeRatesIo implements RateProviderInterface
         $this->apiKey = $apiKey;
     }
 
-    public function getRates(): array
+    public function getRateByCurrencyCode(string $currencyCode): ?float
     {
         try {
             $data = $this->client
@@ -29,12 +29,13 @@ class ExchangeRatesIo implements RateProviderInterface
                 ])
                 ->getBody()
                 ->getContents();
-        } catch (GuzzleException $exception) {
-            echo $exception->getMessage();
+        } catch (BadResponseException $exception) {
+            // TODO LOGGING
+            // echo $exception->getMessage();
         }
 
         return ($data !== null)
-            ? json_decode($data, true)['rates']
-            : [];
+            ? json_decode($data, true)['rates'][$currencyCode]
+            : $data;
     }
 }

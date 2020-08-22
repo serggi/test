@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace CurrencyApp\Provider;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use stdClass;
+use GuzzleHttp\Exception\BadResponseException;
 
 class BinListNet implements BinProviderInterface
 {
     private const PROVIDER_URL = 'https://lookup.binlist.net/';
-    private $client;
-    private $apiKey;
+    private Client $client;
+    private ?string $apiKey;
 
     public function __construct(string $apiKey = null, Client $client = null)
     {
@@ -20,21 +19,22 @@ class BinListNet implements BinProviderInterface
         $this->apiKey = $apiKey;
     }
 
-    public function getDataByBin(string $bin): StdClass
+    public function getCountryCodeByBin(string $bin): ?string
     {
         try {
-            $data = $this->client
+            $response = $this->client
                 ->get($bin, [
                     'base_uri' => self::PROVIDER_URL,
                 ])
                 ->getBody()
                 ->getContents();
-        } catch (GuzzleException $exception) {
-            echo $exception->getMessage();
+        } catch (BadResponseException $exception) {
+            // log $exception->getMessage();
+            return null;
         }
 
-        return ($data !== null)
-            ? json_decode($data)
-            : new StdClass();
+        return (!empty($response))
+            ? json_decode($response, true)['country']['alpha2']
+            : null;
     }
 }
